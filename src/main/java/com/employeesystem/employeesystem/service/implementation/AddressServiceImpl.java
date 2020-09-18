@@ -1,8 +1,9 @@
-package com.employeesystem.employeesystem.service.dto;
+package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.repository.model.address.Address;
 import com.employeesystem.employeesystem.repository.model.address.AddressRepository;
 import com.employeesystem.employeesystem.service.api.AddressService;
+import com.employeesystem.employeesystem.service.dto.AddressDTO;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<Address> getAll() {
-        return addressRepository.findAll();
+      return   addressRepository.findAll();
+
     }
 
     @Override
@@ -34,16 +36,15 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public void deleteAddress(String id) {
-        Address byId = addressRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Address with id "+ id ,id));
-        addressRepository.delete(byId);
-    }
-
-    @Override
     public Address getById(String id) {
         return addressRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Address with id "+ id ,id));
     }
 
+    @Override
+    public void deleteAddress(String id) {
+        final Address idToDelete = getById(id);
+        addressRepository.delete(idToDelete);
+    }
     @Override
     public void update(String id, AddressDTO addressDTO) {
         Address updated = getById(id);

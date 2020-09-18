@@ -1,91 +1,134 @@
 package com.employeesystem.employeesystem.service.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 
-public class CarteIdentitateDTO implements Serializable {
-    private int id;
-    private String serie;
-    private Integer number;
-    private String cnp;
-    private String cetatenie;
-    private String emisDe;
-    private Date dataEmitere;
-    private Date dataExpirare;
+public class IDcardDTO implements Serializable {
+    private String id;
 
-    public CarteIdentitateDTO(int id, String serie, Integer number, String cnp, String cetatenie,
-                              String emisDe, Date dataEmitere, Date dataExpirare) {
+    @NotEmpty(message = "Series must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]{2}+$", message = "You are allowed to input only 2 letters!")
+    private String series;
+
+    @NotNull(message = "Number must not be empty.")
+    @Pattern(regexp="^[0-9]{6}+$", message = "Your Id number must have 6 digits and not includ letters!")
+    private String number;
+
+    @NotEmpty(message = "CNP must not be empty.")
+    @Pattern(regexp="^[1-2]{1}[0-9]{12}+$", message = "Your CNP must have 13 digits, not includ letters and begin with 1 or 2!")
+    private String cnp;
+
+    @NotEmpty(message = "Citizenship must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    private String citizenship;
+
+    @NotEmpty(message = "Issued By de must not be empty.")
+    private String issuedBy;
+
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+    @NotNull(message = "Date Of Issue must not be null.")
+    private Date dateOfIssue;
+
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+    @NotNull(message = "Expiration Date must not be null.")
+    private Date expirationDate;
+
+    public IDcardDTO(String id, String series, String number, String cnp, String citizenship,
+                     String issuedBy, Date dateOfIssue, Date expirationDate) {
         this.id = id;
-        this.serie = serie;
+        this.series = series;
         this.number = number;
         this.cnp = cnp;
-        this.cetatenie = cetatenie;
-        this.emisDe = emisDe;
-        this.dataEmitere = dataEmitere;
-        this.dataExpirare = dataExpirare;
+        this.citizenship = citizenship;
+        this.issuedBy = issuedBy;
+        this.dateOfIssue = dateOfIssue;
+        this.expirationDate = expirationDate;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getSerie() {
-        return serie;
+    public String getSeries() {
+        return series;
     }
 
-    public void setSerie(String serie) {
-        this.serie = serie;
+    public void setSeries(String series) {
+        this.series = series;
     }
 
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
-    public String getCNP() {
+    public String getCnp() {
         return cnp;
     }
 
-    public void setCNP(String cnp) {
+    public void setCnp(String cnp) {
         this.cnp = cnp;
     }
 
-    public String getCetatenie() {
-        return cetatenie;
+    public String getCitizenship() {
+        return citizenship;
     }
 
-    public void setCetatenie(String cetatenie) {
-        this.cetatenie = cetatenie;
+    public void setCitizenship(String citizenship) {
+        this.citizenship = citizenship;
     }
 
-    public String getEmisDe() {
-        return emisDe;
+    public String getIssuedBy() {
+        return issuedBy;
     }
 
-    public void setEmisDe(String emisDe) {
-        this.emisDe = emisDe;
+    public void setIssuedBy(String issuedBy) {
+        this.issuedBy = issuedBy;
     }
 
-    public Date getDataEmitere() {
-        return dataEmitere;
+    public Date getDateOfIssue() {
+        return dateOfIssue;
     }
 
-    public void setDataEmitere(Date dataEmitere) {
-        this.dataEmitere = dataEmitere;
+    public void setDateOfIssue(Date dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 
-    public Date getDataExpirare() {
-        return dataExpirare;
+    public Date getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setDataExpirare(Date dataExpirare) {
-        this.dataExpirare = dataExpirare;
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    @Override
+    public String toString() {
+        return "IDcardDTO{" +
+                "id='" + id + '\'' +
+                ", series='" + series + '\'' +
+                ", number='" + number + '\'' +
+                ", cnp='" + cnp + '\'' +
+                ", citizenship='" + citizenship + '\'' +
+                ", issuedBy='" + issuedBy + '\'' +
+                ", dateOfIssue=" + dateOfIssue +
+                ", expirationDate=" + expirationDate +
+                '}';
     }
 }

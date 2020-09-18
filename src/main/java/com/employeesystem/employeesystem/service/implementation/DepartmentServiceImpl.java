@@ -1,21 +1,20 @@
-package com.employeesystem.employeesystem.service.dto;
+package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.repository.model.department.Department;
 import com.employeesystem.employeesystem.repository.model.department.DepartmentRepository;
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.service.api.DepartmentService;
+import com.employeesystem.employeesystem.service.dto.DepartmentDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
-
+    @Autowired
     private DepartmentRepository departmentRepository;
 
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
-        this.departmentRepository = departmentRepository;
-    }
 
     @Override
     public Department create(DepartmentDTO departmentDTO) {

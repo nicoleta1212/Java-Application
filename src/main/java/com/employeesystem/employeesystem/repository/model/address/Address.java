@@ -8,8 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Entity
@@ -22,19 +24,25 @@ public class Address implements Serializable {
     private String id;
 
     @NotEmpty(message = "Region must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
     private String region;
 
     @NotEmpty(message = "City must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
     private String city;
 
     @NotEmpty(message = "Street must not be empty.")
     private String street;
 
     @NotNull(message = "Number of street must not be empty.")
+    @Min(value = 1, message = "You are allowed only positive numbers and bigger than 0.")
     private int nr;
 
     private String block;
+
     private char staircase;
+
+    @Min(value = 1, message = "You are allowed only positive numbers and bigger than 0.")
     private int  apartment;
 
     public Address() {
@@ -49,7 +57,7 @@ public class Address implements Serializable {
     }
 
     public String getRegion() {
-        return region;
+            return region;
     }
 
     public void setRegion(String region) {

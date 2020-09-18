@@ -2,66 +2,66 @@ package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.repository.model.IDcard.IDcard;
 import com.employeesystem.employeesystem.repository.model.IDcard.IDcardRepository;
-import com.employeesystem.employeesystem.service.api.CarteIdentitateService;
+import com.employeesystem.employeesystem.service.api.IDcardService;
 import com.employeesystem.employeesystem.service.dto.IDcardDTO;
+import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CarteIdentitateServiceImpl implements CarteIdentitateService {
-    private IDcardRepository carteIdentitateRepository;
+public class IDcardServiceImpl implements IDcardService {
+    @Autowired
+    private IDcardRepository iDcardRepository;
 
-    public CarteIdentitateServiceImpl(IDcardRepository carteIdentitateRepository) {
-        this.carteIdentitateRepository = carteIdentitateRepository;
+
+    @Override
+    public IDcard create(IDcardDTO iDcardDTO) {
+        IDcard iDcard = new IDcard();
+        iDcard.setSeries(iDcardDTO.getSeries());
+        iDcard.setNumber(iDcardDTO.getNumber());
+        iDcard.setCnp(iDcardDTO.getCnp());
+        iDcard.setCitizenship(iDcardDTO.getCitizenship());
+        iDcard.setIssuedBy(iDcardDTO.getIssuedBy());
+        iDcard.setDateOfIssue(iDcardDTO.getDateOfIssue());
+        iDcard.setExpirationDate(iDcardDTO.getExpirationDate());
+
+        return iDcardRepository.save(iDcard);
     }
 
     @Override
-    public IDcard create(IDcardDTO carteIdentitateDTO) {
-        IDcard carteIdentitate = new IDcard();
-        carteIdentitate.setSeries(carteIdentitateDTO.getSerie());
-        carteIdentitate.setNumber(carteIdentitateDTO.getNumber());
-        carteIdentitate.setCNP(carteIdentitateDTO.getCNP());
-        carteIdentitate.setCitizenship(carteIdentitateDTO.getCetatenie());
-        carteIdentitate.setIssuedBy(carteIdentitateDTO.getEmisDe());
-        carteIdentitate.setDateOfIssue(carteIdentitateDTO.getDateOfIssue());
-        carteIdentitate.setExpirationDate(carteIdentitateDTO.getExpirationDate());
-
-        return carteIdentitateRepository.save(carteIdentitate);
-    }
-
-    @Override
-    public void delete(int id) {
+    public void delete(String id) {
         final IDcard toDelete = getById(id);
-        carteIdentitateRepository.delete(toDelete);
+        iDcardRepository.delete(toDelete);
     }
 
     @Override
     public List<IDcard> getAll() {
-        return carteIdentitateRepository.findAll();
+        return iDcardRepository.findAll();
     }
 
     @Override
-    public IDcard getById(int id) {
-         return carteIdentitateRepository.findById(id).orElseThrow(()-> new RuntimeException("Id not existing!"));
+    public IDcard getById(String id) {
+         return iDcardRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Id card "));
 
     }
 
     @Override
-    public void update(int id, IDcardDTO carteIdentitateDTO) {
+    public void update(String id, IDcardDTO iDcardDTO) {
         final IDcard updated = getById(id);
-        updated.setSeries(carteIdentitateDTO.getSerie());
-        updated.setNumber(carteIdentitateDTO.getNumber());
-        updated.setCNP(carteIdentitateDTO.getCNP());
-        updated.setCitizenship(carteIdentitateDTO.getCetatenie());
-        updated.setIssuedBy(carteIdentitateDTO.getEmisDe());
-        updated.setDateOfIssue(carteIdentitateDTO.getDateOfIssue());
-        updated.setExpirationDate(carteIdentitateDTO.getExpirationDate());
+        updated.setSeries(iDcardDTO.getSeries());
+        updated.setNumber(iDcardDTO.getNumber());
+        updated.setCnp(iDcardDTO.getCnp());
+        updated.setCitizenship(iDcardDTO.getCitizenship());
+        updated.setIssuedBy(iDcardDTO.getIssuedBy());
+        updated.setDateOfIssue(iDcardDTO.getDateOfIssue());
+        updated.setExpirationDate(iDcardDTO.getExpirationDate());
 
-        carteIdentitateRepository.save(updated);
+        iDcardRepository.save(updated);
     }
 
     public void deleteAll(){
-        carteIdentitateRepository.deleteAll();
+        iDcardRepository.deleteAll();
     }
 }

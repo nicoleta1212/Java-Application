@@ -5,16 +5,16 @@ import com.employeesystem.employeesystem.service.dto.IDcardDTO;
 
 import java.util.List;
 
-public interface CarteIdentitateService {
+public interface IDcardService {
 
-    IDcard create(IDcardDTO carteIdentitateDTO);
+    IDcard create(IDcardDTO iDcardDTO);
 
-    void delete(int id);
+    void delete(String id);
 
     List<IDcard> getAll();
 
-    IDcard getById(int id);
+    IDcard getById(String id);
 
-    void update(int id, IDcardDTO carteIdentitateDTO);
-    public void deleteAll();
+    void update(String id, IDcardDTO iDcardDTO);
+     void deleteAll();
 }

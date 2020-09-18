@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class ScheduleDTO implements Serializable {
     private String id;
+
     private String monday;
     private String tuesday;
     private String wednesday;

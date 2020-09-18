@@ -14,8 +14,9 @@ public interface ScheduleService {
 
     void update(String id, ScheduleDTO scheduleDTO);
 
-    List<Schedule> getAll();
+    List<Schedule> findAll();
 
     Schedule addSchedule(String employeeId, ScheduleDTO scheduleDTO);
-     List<Schedule> schedule();
+
+     public void deleteAll();
 }

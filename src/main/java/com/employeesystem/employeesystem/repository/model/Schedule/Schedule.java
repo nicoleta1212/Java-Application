@@ -1,6 +1,7 @@
 package com.employeesystem.employeesystem.repository.model.Schedule;
 
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class Schedule implements Serializable {
     private String sunday;
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("schedule")
     private Employee employee;
 
     public Schedule() {

@@ -1,7 +1,7 @@
-package com.employeesystem.employeesystem.repository.model.carteIdentitate;
+package com.employeesystem.employeesystem.repository.model.IDcard;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 @Repository
-public interface CarteIdentitateRepository extends JpaRepository<CarteIdentitate, Integer> {
+public interface IDcardRepository extends JpaRepository<IDcard, String> {
 }

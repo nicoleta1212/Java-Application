@@ -1,21 +1,36 @@
 package com.employeesystem.employeesystem.service.dto;
 
-import com.employeesystem.employeesystem.repository.model.employee.Employee;
-
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddressDTO  implements Serializable {
     private String id;
+    @NotEmpty(message = "Region must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
     private String region;
+
+    @NotEmpty(message = "City must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
     private String city;
+
+    @NotEmpty(message = "Street must not be empty.")
     private String street;
+
+    @NotNull(message = "Number of street must not be empty.")
+    @Min(value = 1, message = "You are allowed only positive numbers and bigger than 0.")
     private int nr;
+
     private String block;
+
     private char staircase;
+
+    @Min(value = 1, message = "You are allowed only positive numbers and bigger than 0.")
     private int apartment;
-    private List<Employee> employees = new ArrayList<>();
+
+
 
     public AddressDTO() {
     }
@@ -49,7 +64,7 @@ public class AddressDTO  implements Serializable {
     }
 
     public String getRegion() {
-        return region;
+           return region;
     }
 
     public void setRegion(String region) {
@@ -57,7 +72,7 @@ public class AddressDTO  implements Serializable {
     }
 
     public String getCity() {
-        return city;
+            return city;
     }
 
     public void setCity(String city) {
@@ -65,7 +80,7 @@ public class AddressDTO  implements Serializable {
     }
 
     public String getStreet() {
-        return street;
+            return street;
     }
 
     public void setStreet(String street) {
@@ -81,7 +96,7 @@ public class AddressDTO  implements Serializable {
     }
 
     public String getBlock() {
-        return block;
+            return block;
     }
 
     public void setBlock(String block) {
@@ -89,7 +104,12 @@ public class AddressDTO  implements Serializable {
     }
 
     public char getStaircase() {
-        return staircase;
+       // if(Character.toString(staircase).matches("^[a-zA-Z]+$")){
+            return staircase;
+      /*  }else {
+            throw new InvalidInputException(Character.toString(staircase));
+        }*/
+
     }
 
     public void setStaircase(char staircase) {
@@ -104,11 +124,5 @@ public class AddressDTO  implements Serializable {
         this.apartment = apartment;
     }
 
-    public List<Employee> getEmployees() {
-        return employees;
-    }
 
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
-    }
 }

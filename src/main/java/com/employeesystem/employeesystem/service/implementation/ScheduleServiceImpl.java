@@ -1,17 +1,17 @@
-package com.employeesystem.employeesystem.service.dto;
+package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.repository.model.Schedule.Schedule;
 import com.employeesystem.employeesystem.repository.model.Schedule.ScheduleRepository;
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.ScheduleService;
+import com.employeesystem.employeesystem.service.dto.ScheduleDTO;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -72,7 +72,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         final Employee employee = empId.get();
 
-        // Schedule schedule = new Schedule();
         final Optional<Schedule> scheduleById = scheduleRepository.findById(scheduleDTO.getId());
         if (!scheduleById.isPresent()) {
             return null;
@@ -95,12 +94,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
-    public List<Schedule> schedule() {
-        final List<Schedule> all = scheduleRepository.findAll();
-       return all.stream()
-                .filter(s -> s.getMonday().equalsIgnoreCase("10-16"))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void deleteAll() {

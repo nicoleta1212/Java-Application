@@ -1,12 +1,12 @@
-package com.employeesystem.employeesystem.service.dto;
+package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.producer.JmsProducer;
-import com.employeesystem.employeesystem.repository.model.Schedule.ScheduleRepository;
 import com.employeesystem.employeesystem.repository.model.department.Department;
 import com.employeesystem.employeesystem.repository.model.department.DepartmentRepository;
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.EmployeeService;
+import com.employeesystem.employeesystem.service.dto.EmployeeDTO;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,21 +25,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     JmsProducer producer;
     @Autowired
     private JmsTemplate jmsTemplate;
-
+    @Autowired
     private EmployeeRepository employeeRepository;
-
+    @Autowired
     private DepartmentRepository departmentRepository;
 
-    private ScheduleRepository scheduleRepository;
-
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository, ScheduleRepository scheduleRepository) {
-        this.employeeRepository = employeeRepository;
-        this.departmentRepository = departmentRepository;
-        this.scheduleRepository = scheduleRepository;
-    }
-
     @Override
-    public Employee createEmployee(String departId, EmployeeDTO employeeDTO) {
+    public Employee createEmployee(String departId, EmployeeDTO employeeDTO) throws ParseException {
         List<Employee> employeeList = new ArrayList<>();
         Employee employee = new Employee();
 
@@ -48,21 +39,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setLastName(employeeDTO.getLastName());
         employee.setDateOfBirth(employeeDTO.getDateOfBirth());
         employee.setGender(employeeDTO.getGender());
+
         employee.setDateOfHiring(employeeDTO.getDateOfHiring());
+
         employee.setWorking(employeeDTO.isWorking());
 
         employee.setAddress((employeeDTO.getAddress()));
-        employee.setCarteIdentitate(employeeDTO.getCarteIdentitate());
+        employee.setIdcard(employeeDTO.getIdcard());
         employee.setSchedule(employeeDTO.getSchedule());
 
 
         Department department = new Department();
-        final Optional<Department> byId = departmentRepository.findById(departId);
-        if (!byId.isPresent()) {
-            return null;
-        }
-        final Department department1 = byId.get();
-        employee.setDepartment(department1);
+        final Department byId = departmentRepository.findById(departId).orElseThrow(()-> new EntityNotFoundException("Department "));
+        employee.setDepartment(byId);
         final Employee savedEmployee = employeeRepository.save(employee);
         employeeList.add(savedEmployee);
         department.setEmployee(employeeList);
@@ -91,7 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         jmsTemplate.convertAndSend("employee", "Employee   " + idToDelete.getLastName() + " " + idToDelete.getFirstName() + " has been deleted.");
     }
     @Override
-    public void update(String id, EmployeeDTO employeeDTO) {
+    public void update(String id, EmployeeDTO employeeDTO) throws ParseException {
         Employee updated = getById(id);
 
         updated.setFirstName(employeeDTO.getFirstName());
@@ -102,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         updated.setWorking(employeeDTO.isWorking());
 
         updated.setAddress(employeeDTO.getAddress());
-        updated.setCarteIdentitate(employeeDTO.getCarteIdentitate());
+        updated.setIdcard(employeeDTO.getIdcard());
         updated.setSchedule(employeeDTO.getSchedule());
 
         employeeRepository.save(updated);
@@ -144,18 +133,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override //  working
-    public List<Employee> listByGender(String gender, String city) {
+    public List<Employee> listByGenderAndCity(String gender, String city) {
         final List<Employee> allByGender = employeeRepository.findAllByGender(gender);
        return allByGender.stream().filter(e -> e.getAddress().getCity().equalsIgnoreCase(city))
                 .collect(Collectors.toList());
 
-       /* return allEmployees.stream()
-               // .map(e->e.getLastName() + " " + e.getLastName()) //lista cu numele List<String> / map changes the type of data
-                .collect(Collectors.toList());*/
     }
 
     @Override //lista departamentelor
-    public List<String> department() {
+    public List<String> allDepartments() {
         final List<Employee> all = employeeRepository.findAll();
         return all.stream().map(e -> e.getDepartment().getName())
                 .distinct()
@@ -163,7 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override //lista angajatilor care lucreaza la cleaning - working
-    public List<String> employeesPerDepartment() {
+    public List<String> employeesFromCleaningDepartment() {
         final List<Department> all = departmentRepository.findAll();
         return all.stream()
                 .filter(e -> e.getName().equalsIgnoreCase("cleaning"))
@@ -183,23 +169,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    @Override // working
-    public List<String> employeesCleaning() {
-        final List<Employee> all = employeeRepository.findAll();
-        return all.stream()
-                .filter(e -> e.getDepartment().getName().equalsIgnoreCase("cleaning"))
-                .map(Employee::getLastName).collect(Collectors.toList());
-    }
 
     @Override //  nr of all employees of all departments - working
-    public long allEmployees() {
+    public long nrOfAllEmployeesFromAllDepartments() {
         final List<Department> all = departmentRepository.findAll();
-        return all.stream().flatMap(dep -> dep.getEmployee().stream()).count(); // mapToLong(dep -> dep.getEmployee().size()).sum();
-       /* final long cleaning = all.stream().filter(e -> e.getDepartment().getName().equalsIgnoreCase("cleaning"))
-                .count();
-        final long marketing = all.stream().filter(e -> e.getDepartment().getName().equalsIgnoreCase("marketing"))
-                .count();
-        return cleaning + marketing;*/
+        return all.stream().mapToLong(dep -> dep.getEmployee().size()).sum();
+
     }
 
     @Override // working
@@ -224,21 +199,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
-    @Override
-    public List<String> customEmployee() throws ParseException {
-        final List<Employee> all = employeeRepository.findAll();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date start = sdf.parse("2010-01-01");
-        Date end = sdf.parse("2016-01-01");
-        return all.stream().filter(e -> e.getDepartment().getName().equalsIgnoreCase("cleaning"))
-                // .filter(e -> e.getAddress().getCity().equalsIgnoreCase("brasov"))
-                //.filter(e -> e.getDateOfBirth().after(start) && e.getDateOfBirth().before(end))
-                .map(e -> e.getLastName() + " " + e.getFirstName() + ": hired on " + e.getDateOfHiring())
-                .sorted()
-                .collect(Collectors.toList());
-
-
-    }
 
     // working
     public List<Employee> schedule(String monday, String tuesday,String wednesday,String thursday,String friday,String saturday,String sunday) {

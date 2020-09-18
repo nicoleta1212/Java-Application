@@ -2,12 +2,13 @@ package com.employeesystem.employeesystem.service.api;
 
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.service.dto.EmployeeDTO;
+import com.employeesystem.employeesystem.web.exceptions.InvalidFormatException;
 
 import java.text.ParseException;
 import java.util.List;
 
 public interface EmployeeService {
-    Employee createEmployee(String departId,EmployeeDTO employeeDTO);
+    Employee createEmployee(String departId, EmployeeDTO employeeDTO) throws ParseException, InvalidFormatException;
 
     void deleteEmployee( String id);
 
@@ -15,7 +16,7 @@ public interface EmployeeService {
 
     Employee getById(String id);
 
-    void update(String id, EmployeeDTO employeeDTO);
+    void update(String id, EmployeeDTO employeeDTO) throws ParseException, InvalidFormatException;
 
     List<Employee> search(String name);
 
@@ -27,18 +28,16 @@ public interface EmployeeService {
 
     List<String> sortedList();
 
-    List<String> department();
-    List<String> employeesPerDepartment();
+    List<String> allDepartments();
+    List<String> employeesFromCleaningDepartment();
 
-    List<Employee> listByGender(String gender, String city );
+    List<Employee> listByGenderAndCity(String gender, String city );
 
     List<String > employeesByCity(String city);
 
-    List<String> employeesCleaning();
-
-    long allEmployees();
+    long nrOfAllEmployeesFromAllDepartments();
     List<String> departmentMostEmployees();
-    List<String> customEmployee() throws ParseException;
+
     List<Employee> schedule(String monday, String tuesday,String wednesday,String thursday,String friday,String saturday,String sunday);
 
     List<String> search(String departName, String city, String start, String end) throws ParseException;

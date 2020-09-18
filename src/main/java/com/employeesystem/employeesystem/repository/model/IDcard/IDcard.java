@@ -1,125 +1,132 @@
-package com.employeesystem.employeesystem.repository.model.carteIdentitate;
+package com.employeesystem.employeesystem.repository.model.IDcard;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 @Entity
-@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class,property="@id", scope = CarteIdentitate.class)
-public class CarteIdentitate implements Serializable {
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class,property="@id", scope = IDcard.class)
+public class IDcard implements Serializable {
     @Id
-    @SequenceGenerator(initialValue=1, name="carteId_seq", sequenceName="carteId_sequence")
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="carteId_seq")
-    private int id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
-    @NotEmpty(message = "Serie must not be empty.")
-    private String serie;
+    @NotEmpty(message = "Series must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]{2}+$", message = "You are allowed to input only 2 letters!")
+    private String series;
 
-    @NotEmpty(message = "Number must not be empty.")
-    private Integer number;
+    @NotNull(message = "Number must not be empty.")
+    @Pattern(regexp="^[0-9]{6}+$", message = "Your Id number must have 6 digits and not includ letters!")
+    private String number;
 
     @NotEmpty(message = "CNP must not be empty.")
+    @Pattern(regexp="^[1-2]{1}[0-9]{12}+$", message = "Your CNP must have 13 digits, not includ letters and begin with 1 or 2!")
     private String cnp;
 
-    @NotEmpty(message = "Cetatenie must not be empty.")
-    private String cetatenie;
+    @NotEmpty(message = "citizenship must not be empty.")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    private String citizenship;
 
-    @NotEmpty(message = "Emis de must not be empty.")
-    private String emisDe;
-
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
-    @NotNull(message = "Data emitere must not be null.")
-    private Date dataEmitere;
+    @NotEmpty(message = "Issued By de must not be empty.")
+    private String issuedBy;
 
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
-    @NotNull(message = "Data expirare must not be null.")
-    private Date dataExpirare;
+    @NotNull(message = "Date Of Issue must not be null.")
+    private Date dateOfIssue;
 
-    public CarteIdentitate() {
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
+    @NotNull(message = "Expiration Date must not be null.")
+    private Date expirationDate;
+
+    public IDcard() {
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getSerie() {
-        return serie;
+
+    public String getSeries() {
+        return series;
     }
 
-    public void setSerie(String serie) {
-        this.serie = serie;
+    public void setSeries(String series) {
+        this.series = series;
     }
 
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(Integer number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
-    public String getCNP() {
+    public String getCnp() {
         return cnp;
     }
 
-    public void setCNP(String cnp) {
+    public void setCnp(String cnp) {
         this.cnp = cnp;
     }
 
-    public String getCetatenie() {
-        return cetatenie;
+    public String getCitizenship() {
+        return citizenship;
     }
 
-    public void setCetatenie(String cetatenie) {
-        this.cetatenie = cetatenie;
+    public void setCitizenship(String citizenship) {
+        this.citizenship = citizenship;
     }
 
-    public String getEmisDe() {
-        return emisDe;
+    public String getIssuedBy() {
+        return issuedBy;
     }
 
-    public void setEmisDe(String emisDe) {
-        this.emisDe = emisDe;
+    public void setIssuedBy(String issuedBy) {
+        this.issuedBy = issuedBy;
     }
 
-    public Date getDataEmitere() {
-        return dataEmitere;
+    public Date getDateOfIssue() {
+        return dateOfIssue;
     }
 
-    public void setDataEmitere(Date dataEmitere) {
-        this.dataEmitere = dataEmitere;
+    public void setDateOfIssue(Date dateOfIssue) {
+        this.dateOfIssue = dateOfIssue;
     }
 
-    public Date getDataExpirare() {
-        return dataExpirare;
+    public Date getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setDataExpirare(Date dataExpirare) {
-        this.dataExpirare = dataExpirare;
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     @Override
     public String toString() {
-        return "CarteIdentitate:" +
-                "id=" + id +
-                ", serie='" + serie + '\'' +
+        return "IDcard{" +
+                "id='" + id + '\'' +
+                ", series='" + series + '\'' +
                 ", number=" + number +
                 ", cnp='" + cnp + '\'' +
-                ", cetatenie='" + cetatenie + '\'' +
-                ", emisDe='" + emisDe + '\'' +
-                ", dataEmitere=" + dataEmitere +
-                ", dataExpirare=" + dataExpirare +
-                '.';
+                ", citizenship='" + citizenship + '\'' +
+                ", issuedBy='" + issuedBy + '\'' +
+                ", dateOfIssue=" + dateOfIssue +
+                ", expirationDate=" + expirationDate +
+                '}';
     }
 }

@@ -2,16 +2,16 @@ package com.employeesystem.employeesystem.service.dto;
 
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DepartmentDTO implements Serializable {
     private String id;
-
+    @NotEmpty(message = "Name must not be empty.")
     private String name ;
 
-    private List<Employee> employee = new ArrayList<>();
+    private List<Employee> employee;
 
     public DepartmentDTO(String name, List<Employee> employee) {
         this.name = name;
