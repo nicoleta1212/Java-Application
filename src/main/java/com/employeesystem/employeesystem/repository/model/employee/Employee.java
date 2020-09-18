@@ -69,7 +69,7 @@ public class Employee implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "schedule_id", nullable = false, updatable = false)})
     private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "dept_FK")
     @JsonIgnoreProperties("employee")
     private Department department;

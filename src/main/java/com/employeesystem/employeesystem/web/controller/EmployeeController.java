@@ -129,7 +129,7 @@ public class EmployeeController {
     }
     @GetMapping("/search")
     public List<String> search(@NotEmpty @RequestParam String name, @NotEmpty @RequestParam String city,
-                               @NotEmpty @RequestParam String start, @NotEmpty @RequestParam String end) throws ParseException {
+                               @NotEmpty @RequestParam String start, @NotEmpty @RequestParam String end) throws ParseException{
         return employeeService.search(name, city, start, end);
     }
 

@@ -8,6 +8,7 @@ import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepos
 import com.employeesystem.employeesystem.service.api.EmployeeService;
 import com.employeesystem.employeesystem.service.dto.EmployeeDTO;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
+import com.employeesystem.employeesystem.web.exceptions.InvalidInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -105,17 +106,29 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> search(String lastName) {
+        String regex= "^[a-zA-Z]+$";
+        if (!lastName.matches(regex) ){
+            throw new InvalidInputException(lastName);
+        }
         return employeeRepository.findAllByLastName(lastName);
 
     }
 
     @Override
     public List<Employee> searchByCity(String city) {
+        String regex= "^[a-zA-Z]+$";
+        if (!city.matches(regex) ){
+            throw new InvalidInputException(city);
+        }
         return employeeRepository.findAllByAddressCity(city);
     }
 
     @Override
     public List<Employee> findAllByLastNameAndAddressCity(String lastName, String city) {
+        String regex= "^[a-zA-Z]+$";
+        if (!city.matches(regex) || !lastName.matches(regex)){
+            throw new InvalidInputException("value ");
+        }
         return employeeRepository.findAllByLastNameAndAddressCity(lastName, city);
     }
 
@@ -124,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findAllByScheduleId(id);
     }
 
-    @Override //  working
+    @Override
     public List<String> sortedList() {
 
         final List<Employee> all = employeeRepository.findAll();
@@ -132,15 +145,19 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(e -> e.getLastName() + " " + e.getFirstName()).sorted().collect(Collectors.toList());
     }
 
-    @Override //  working
+    @Override
     public List<Employee> listByGenderAndCity(String gender, String city) {
         final List<Employee> allByGender = employeeRepository.findAllByGender(gender);
+        String regex= "^[a-zA-Z]+$";
+        if (!city.matches(regex) || !gender.matches(regex)){
+            throw new InvalidInputException("value ");
+        }
        return allByGender.stream().filter(e -> e.getAddress().getCity().equalsIgnoreCase(city))
                 .collect(Collectors.toList());
 
     }
 
-    @Override //lista departamentelor
+    @Override
     public List<String> allDepartments() {
         final List<Employee> all = employeeRepository.findAll();
         return all.stream().map(e -> e.getDepartment().getName())
@@ -148,7 +165,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    @Override //lista angajatilor care lucreaza la cleaning - working
+    @Override
     public List<String> employeesFromCleaningDepartment() {
         final List<Department> all = departmentRepository.findAll();
         return all.stream()
@@ -160,9 +177,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
-    @Override // working
+    @Override
     public List<String> employeesByCity(String city) {
         final List<Employee> all = employeeRepository.findAllByAddressCity(city);
+        String regex= "^[a-zA-Z]+$";
+        if (!city.matches(regex)){
+            throw new InvalidInputException(city);
+        }
         return all.stream()
                 .map(e->e.getLastName() + " " + e.getLastName())
                 .sorted()
@@ -170,14 +191,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-    @Override //  nr of all employees of all departments - working
+    @Override
     public long nrOfAllEmployeesFromAllDepartments() {
         final List<Department> all = departmentRepository.findAll();
         return all.stream().mapToLong(dep -> dep.getEmployee().size()).sum();
 
     }
 
-    @Override // working
+    @Override
     public List<String> departmentMostEmployees() {
         final List<Employee> all = employeeRepository.findAll();
         final long cleaning = all.stream().filter(e -> e.getDepartment().getName().equalsIgnoreCase("cleaning"))
@@ -200,16 +221,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-    // working
+    @Override
     public List<Employee> schedule(String monday, String tuesday,String wednesday,String thursday,String friday,String saturday,String sunday) {
         final List<Employee> schedule = employeeRepository.findAllByScheduleMondayOrScheduleTuesdayOrScheduleWednesdayOrScheduleThursdayOrScheduleFridayOrScheduleSaturdayOrScheduleSunday(monday, tuesday, wednesday, thursday, friday, saturday, sunday);
           return   schedule.stream().filter(e->e.getDepartment().getName().equalsIgnoreCase("cleaning")).collect(Collectors.toList());
     }
 
-    @Override // working
+    @Override
     public List<String> search(String name, String city, String start, String end) throws ParseException {
+        String regex= "^[a-zA-Z]+$";
+        if (!city.matches(regex)){
+            throw new InvalidInputException(city);
+        }
+
         final List<Employee> employeeList = employeeRepository.searchByDepartmentNameAndAddressCity(name, city);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setLenient(false);
         Date startDate = sdf.parse(start);
         Date endDate = sdf.parse(end);
         return employeeList.stream().filter(e -> e.getDateOfBirth().after(startDate) && e.getDateOfBirth().before(endDate))
