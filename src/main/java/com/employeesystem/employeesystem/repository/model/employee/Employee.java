@@ -44,6 +44,7 @@ public class Employee implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     @NotNull(message = "Date of hiring must not be empty.")
+    @JsonFormat(lenient = OptBoolean.FALSE)
     private Date dateOfHiring;
 
     private boolean working;

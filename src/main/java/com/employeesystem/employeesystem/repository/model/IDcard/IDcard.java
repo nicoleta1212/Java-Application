@@ -1,7 +1,9 @@
 package com.employeesystem.employeesystem.repository.model.IDcard;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -41,11 +43,13 @@ public class IDcard implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     @NotNull(message = "Date Of Issue must not be null.")
+    @JsonFormat(lenient = OptBoolean.FALSE)
     private Date dateOfIssue;
 
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(style = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     @NotNull(message = "Expiration Date must not be null.")
+    @JsonFormat(lenient = OptBoolean.FALSE)
     private Date expirationDate;
 
     public IDcard() {
