@@ -7,6 +7,7 @@ import com.employeesystem.employeesystem.repository.model.department.DepartmentR
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.EmployeeService;
+import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -70,12 +71,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.save(savedEmployee);
     }
 
-    @Override
-    public void deleteEmployee(String id) {
-        Employee idToDelete = employeeRepository.getOne(id);
-        employeeRepository.delete(idToDelete);
-        jmsTemplate.convertAndSend("employee", "Employee   " + idToDelete.getLastName() + " " + idToDelete.getFirstName() + " has been deleted.");
-    }
+
 
     @Override
     public List<Employee> getAll() {
@@ -84,10 +80,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee getById(String id) {
-        return employeeRepository.findById(id).orElseThrow(() -> new RuntimeException(id));
+        return employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee with id : " + id,id));
 
     }
 
+    @Override
+    public void deleteEmployee(String id) {
+        Employee idToDelete = getById(id);
+        employeeRepository.delete(idToDelete);
+        jmsTemplate.convertAndSend("employee", "Employee   " + idToDelete.getLastName() + " " + idToDelete.getFirstName() + " has been deleted.");
+    }
     @Override
     public void update(String id, EmployeeDTO employeeDTO) {
         Employee updated = getById(id);

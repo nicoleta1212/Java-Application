@@ -3,17 +3,17 @@ package com.employeesystem.employeesystem.service.dto;
 import com.employeesystem.employeesystem.repository.model.address.Address;
 import com.employeesystem.employeesystem.repository.model.address.AddressRepository;
 import com.employeesystem.employeesystem.service.api.AddressService;
+import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AddressServiceImpl implements AddressService {
+    @Autowired
     private AddressRepository addressRepository;
 
-    public AddressServiceImpl(AddressRepository addressRepository) {
-        this.addressRepository = addressRepository;
-    }
 
     @Override
     public List<Address> getAll() {
@@ -35,13 +35,13 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteAddress(String id) {
-        Address byId = addressRepository.getOne(id);
+        Address byId = addressRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Address with id "+ id ,id));
         addressRepository.delete(byId);
     }
 
     @Override
     public Address getById(String id) {
-        return addressRepository.findById(id).orElseThrow(() -> new RuntimeException(id));
+        return addressRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Address with id "+ id ,id));
     }
 
     @Override

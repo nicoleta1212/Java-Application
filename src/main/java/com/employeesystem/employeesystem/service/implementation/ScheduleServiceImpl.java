@@ -5,6 +5,8 @@ import com.employeesystem.employeesystem.repository.model.Schedule.ScheduleRepos
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.ScheduleService;
+import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +15,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
-
+    @Autowired
     private ScheduleRepository scheduleRepository;
+    @Autowired
     private EmployeeRepository employeeRepository;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, EmployeeRepository employeeRepository) {
-        this.scheduleRepository = scheduleRepository;
-        this.employeeRepository = employeeRepository;
+    @Override
+    public List<Schedule> findAll() {
+        return scheduleRepository.findAll();
     }
 
     @Override
@@ -37,14 +40,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public void delete(String id) {
-        Schedule byId = scheduleRepository.getOne(id);
-        scheduleRepository.delete(byId);
-    }
-
-    @Override
     public Schedule getById(String id) {
-        return scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException(id));
+        return scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule ",id));
+    }
+    @Override
+    public void delete(String id) {
+        Schedule byId = scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule ",id));
+        scheduleRepository.delete(byId);
     }
 
     @Override
@@ -60,10 +62,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepository.save(updated);
     }
 
-    @Override
-    public List<Schedule> getAll() {
-        return scheduleRepository.findAll();
-    }
+
 
     @Override
     public Schedule addSchedule(String employeeId, ScheduleDTO scheduleDTO) {
@@ -101,6 +100,11 @@ public class ScheduleServiceImpl implements ScheduleService {
        return all.stream()
                 .filter(s -> s.getMonday().equalsIgnoreCase("10-16"))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAll() {
+        scheduleRepository.deleteAll();
     }
 }
 
