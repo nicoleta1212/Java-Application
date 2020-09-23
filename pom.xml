@@ -52,6 +52,14 @@
 			<version>6.1.5.Final</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.sipios/spring-search -->
+		<dependency>
+			<groupId>com.sipios</groupId>
+			<artifactId>spring-search</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+
+
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-activemq -->
 		<dependency>

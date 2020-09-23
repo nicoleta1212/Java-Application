@@ -9,11 +9,11 @@ import java.io.Serializable;
 public class AddressDTO  implements Serializable {
     private String id;
     @NotEmpty(message = "Region must not be empty.")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    @Pattern(regexp = "^[a-zA-Z_ -]+$", message = "Wrong input: please use characters!")
     private String region;
 
     @NotEmpty(message = "City must not be empty.")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    @Pattern(regexp = "^[a-zA-Z_ -]+$", message = "Wrong input: please use characters!")
     private String city;
 
     @NotEmpty(message = "Street must not be empty.")

@@ -63,6 +63,7 @@ public class EmployeeController {
 
     @GetMapping("/searchByName")
     public ResponseEntity<List<Employee>> searchByName(@NotEmpty @RequestParam String lastName) {
+
         return ResponseEntity.of(Optional.of(employeeService.search(lastName)));
     }
 
@@ -91,8 +92,8 @@ public class EmployeeController {
         return employeeService.listByGenderAndCity(gender, city);
     }
 
-    @GetMapping("/department")
-    public List<String> department() {
+    @GetMapping("/allDepartments")
+    public List<String> allDepartments() {
         return employeeService.allDepartments();
     }
 
@@ -117,20 +118,11 @@ public class EmployeeController {
     }
 
 
-    @GetMapping("/schedule")
-    public List<Employee> schedule(@RequestParam String monday,
-                                   @RequestParam String tuesday,
-                                   @RequestParam String wednesday,
-                                   @RequestParam String thursday,
-                                   @RequestParam String friday,
-                                   @RequestParam String saturday,
-                                   @RequestParam String sunday) {
-        return employeeService.schedule(monday, tuesday, wednesday, thursday, friday, saturday, sunday);
-    }
     @GetMapping("/search")
     public List<String> search(@NotEmpty @RequestParam String name, @NotEmpty @RequestParam String city,
                                @NotEmpty @RequestParam String start, @NotEmpty @RequestParam String end) throws ParseException{
         return employeeService.search(name, city, start, end);
     }
+
 
 }

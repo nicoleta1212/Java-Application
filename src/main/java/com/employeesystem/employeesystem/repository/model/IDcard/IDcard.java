@@ -52,6 +52,7 @@ public class IDcard implements Serializable {
     @JsonFormat(lenient = OptBoolean.FALSE)
     private Date expirationDate;
 
+
     public IDcard() {
     }
 
@@ -119,6 +120,7 @@ public class IDcard implements Serializable {
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
+
 
     @Override
     public String toString() {

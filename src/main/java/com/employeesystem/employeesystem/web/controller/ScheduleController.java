@@ -3,7 +3,9 @@ package com.employeesystem.employeesystem.web.controller;
 import com.employeesystem.employeesystem.repository.model.Schedule.Schedule;
 import com.employeesystem.employeesystem.service.api.ScheduleService;
 import com.employeesystem.employeesystem.service.dto.ScheduleDTO;
+import com.sipios.springsearch.anotation.SearchSpec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/schedule")
@@ -59,5 +62,10 @@ public class ScheduleController {
     @DeleteMapping("/deleteAll")
     public void deleteAll(){
         scheduleService.deleteAll();
+    }
+
+    @GetMapping("/searchBySpec")
+    public ResponseEntity<List<Schedule>> searchScheduleBySpecifications(@SearchSpec Specification<Schedule> specs){
+        return ResponseEntity.of(Optional.of(scheduleService.scheduleBySpec(specs)));
     }
 }

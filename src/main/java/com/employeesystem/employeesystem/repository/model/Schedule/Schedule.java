@@ -23,7 +23,7 @@ public class Schedule implements Serializable {
     private String sunday;
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("schedule")
+    @JsonIgnoreProperties({"schedule","address","idcard", "dateOfBirth","dateOfHiring","working"})
     private Employee employee;
 
     public Schedule() {
@@ -103,8 +103,16 @@ public class Schedule implements Serializable {
 
     @Override
     public String toString() {
-        return "Schedule:" +
+        return "Schedule{" +
                 "id='" + id + '\'' +
-                '.';
+                ", monday='" + monday + '\'' +
+                ", tuesday='" + tuesday + '\'' +
+                ", wednesday='" + wednesday + '\'' +
+                ", thursday='" + thursday + '\'' +
+                ", friday='" + friday + '\'' +
+                ", saturday='" + saturday + '\'' +
+                ", sunday='" + sunday + '\'' +
+                ", employee=" + employee +
+                '}';
     }
 }

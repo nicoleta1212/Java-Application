@@ -38,7 +38,6 @@ public interface EmployeeService {
     long nrOfAllEmployeesFromAllDepartments();
     List<String> departmentMostEmployees();
 
-    List<Employee> schedule(String monday, String tuesday,String wednesday,String thursday,String friday,String saturday,String sunday);
-
     List<String> search(String departName, String city, String start, String end) throws ParseException;
+
 }

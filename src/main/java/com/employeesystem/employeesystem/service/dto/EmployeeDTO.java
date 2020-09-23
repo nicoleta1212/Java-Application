@@ -23,11 +23,11 @@ import java.util.Date;
 public class EmployeeDTO implements Serializable {
     private String id;
     @NotEmpty(message = "First name cannot be empty!")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    @Pattern(regexp = "^[a-zA-Z_ -]+$", message = "Wrong input: please use characters!")
     private String firstName;
 
     @NotEmpty(message = "Last name must not be empty!")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    @Pattern(regexp = "^[a-zA-Z_ -]+$", message = "Wrong input: please use characters!")
     private String lastName;
 
     @Temporal(TemporalType.DATE)
@@ -37,7 +37,7 @@ public class EmployeeDTO implements Serializable {
     private Date dateOfBirth;
 
     @NotEmpty(message = "Gender must not be empty.")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Wrong input: please use characters!")
+    @Pattern(regexp = "^(female|male)$", message = "Wrong input: gender can be 'female' or 'male'!")
     private String gender;
 
     @Temporal(TemporalType.DATE)

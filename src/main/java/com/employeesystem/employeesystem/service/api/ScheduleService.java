@@ -2,6 +2,7 @@ package com.employeesystem.employeesystem.service.api;
 
 import com.employeesystem.employeesystem.repository.model.Schedule.Schedule;
 import com.employeesystem.employeesystem.service.dto.ScheduleDTO;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface ScheduleService {
     Schedule addSchedule(String employeeId, ScheduleDTO scheduleDTO);
 
      public void deleteAll();
+
+    List<Schedule> scheduleBySpec(Specification<Schedule> specs);
 }

@@ -4,6 +4,7 @@ import com.employeesystem.employeesystem.repository.model.IDcard.IDcard;
 import com.employeesystem.employeesystem.repository.model.IDcard.IDcardRepository;
 import com.employeesystem.employeesystem.service.api.IDcardService;
 import com.employeesystem.employeesystem.service.dto.IDcardDTO;
+import com.employeesystem.employeesystem.web.exceptions.EmptyListException;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,6 @@ public class IDcardServiceImpl implements IDcardService {
         iDcard.setIssuedBy(iDcardDTO.getIssuedBy());
         iDcard.setDateOfIssue(iDcardDTO.getDateOfIssue());
         iDcard.setExpirationDate(iDcardDTO.getExpirationDate());
-
         return iDcardRepository.save(iDcard);
     }
 
@@ -38,7 +38,11 @@ public class IDcardServiceImpl implements IDcardService {
 
     @Override
     public List<IDcard> getAll() {
-        return iDcardRepository.findAll();
+        final List<IDcard> iDcardList = iDcardRepository.findAll();
+        if (iDcardList.isEmpty()){
+            throw new EmptyListException("The list of ID cards is empty.");
+        }
+        return iDcardList;
     }
 
     @Override

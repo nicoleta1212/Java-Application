@@ -51,6 +51,13 @@ public class RestExceptionHandler {
         return ResponseEntity.of(Optional.of(errors));
     }
 
+    @ExceptionHandler(EmptyListException.class)
+    public ResponseEntity<ApiError> handleEmptyList(EmptyListException e ) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+       return buildResponseEntity(new ApiError(status,e.getMessage()));
+    }
+
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> handleEntityNotFound(EntityNotFoundException e, HttpServletResponse response) {
         ResponseEntity<ApiError> responseEntity = buildResponseEntity(new ApiError(e.getStatus(), e.getName() + " was not found", e));

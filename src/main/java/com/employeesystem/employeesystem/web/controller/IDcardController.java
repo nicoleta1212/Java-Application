@@ -47,8 +47,12 @@ public class IDcardController {
     }
 
     @PutMapping("/{id}")
-    public void update(@NotEmpty @PathVariable String id, @Valid @RequestBody IDcardDTO iDcardDTO ){
+    public  Map<String, Boolean> update(@NotEmpty @PathVariable String id, @Valid @RequestBody IDcardDTO iDcardDTO ){
          iDcardService.update(id, iDcardDTO);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("ID card with id: " + id + " has been updated:", Boolean.TRUE);
+
+        return response;
     }
 
     @DeleteMapping("/deleteAll")

@@ -6,8 +6,10 @@ import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.ScheduleService;
 import com.employeesystem.employeesystem.service.dto.ScheduleDTO;
+import com.employeesystem.employeesystem.web.exceptions.EmptyListException;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +24,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<Schedule> findAll() {
-        return scheduleRepository.findAll();
+        final List<Schedule> scheduleList = scheduleRepository.findAll();
+        if (scheduleList.isEmpty()){
+            throw new EmptyListException("The list of schedule is empty.");
+        }
+        return scheduleList;
     }
 
     @Override
@@ -41,11 +47,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Schedule getById(String id) {
-        return scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule ",id));
+        return scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule: "+ id));
     }
     @Override
     public void delete(String id) {
-        Schedule byId = scheduleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Schedule ",id));
+        Schedule byId = getById(id);
         scheduleRepository.delete(byId);
     }
 
@@ -68,13 +74,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Schedule addSchedule(String employeeId, ScheduleDTO scheduleDTO) {
         final Optional<Employee> empId = employeeRepository.findById(employeeId);
         if (!empId.isPresent()) {
-            return null;
+            throw new EntityNotFoundException("Employee with id: " + employeeId);
         }
         final Employee employee = empId.get();
 
         final Optional<Schedule> scheduleById = scheduleRepository.findById(scheduleDTO.getId());
         if (!scheduleById.isPresent()) {
-            return null;
+            throw new EntityNotFoundException("Schedule with id: " + scheduleDTO.getId());
         }
         final Schedule schedule = scheduleById.get();
 
@@ -98,6 +104,15 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void deleteAll() {
         scheduleRepository.deleteAll();
+    }
+
+    @Override
+    public List<Schedule> scheduleBySpec(Specification<Schedule> specs) {
+        final List<Schedule> resultList = scheduleRepository.findAll(Specification.where(specs));
+        if (resultList.isEmpty()){
+            throw new EmptyListException("There are no employees that match this specific criteria.");
+        }
+        return resultList;
     }
 }
 

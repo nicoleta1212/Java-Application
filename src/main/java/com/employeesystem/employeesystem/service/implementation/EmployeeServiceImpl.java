@@ -1,14 +1,15 @@
 package com.employeesystem.employeesystem.service.implementation;
 
 import com.employeesystem.employeesystem.producer.JmsProducer;
+import com.employeesystem.employeesystem.repository.model.Schedule.ScheduleRepository;
 import com.employeesystem.employeesystem.repository.model.department.Department;
 import com.employeesystem.employeesystem.repository.model.department.DepartmentRepository;
 import com.employeesystem.employeesystem.repository.model.employee.Employee;
 import com.employeesystem.employeesystem.repository.model.employee.EmployeeRepository;
 import com.employeesystem.employeesystem.service.api.EmployeeService;
 import com.employeesystem.employeesystem.service.dto.EmployeeDTO;
+import com.employeesystem.employeesystem.web.exceptions.EmptyListException;
 import com.employeesystem.employeesystem.web.exceptions.EntityNotFoundException;
-import com.employeesystem.employeesystem.web.exceptions.InvalidInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private ScheduleRepository scheduleRepository;
 
     @Override
     public Employee createEmployee(String departId, EmployeeDTO employeeDTO) throws ParseException {
@@ -51,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
         Department department = new Department();
-        final Department byId = departmentRepository.findById(departId).orElseThrow(()-> new EntityNotFoundException("Department "));
+        final Department byId = departmentRepository.findById(departId).orElseThrow(() -> new EntityNotFoundException("Department "));
         employee.setDepartment(byId);
         final Employee savedEmployee = employeeRepository.save(employee);
         employeeList.add(savedEmployee);
@@ -62,15 +65,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
 
-
     @Override
     public List<Employee> getAll() {
-        return employeeRepository.findAll();
+        final List<Employee> employeeList = employeeRepository.findAll();
+        if (employeeList.isEmpty()){
+            throw new EmptyListException("The list of employees is empty.");
+        }
+        return  employeeList;
     }
 
     @Override
     public Employee getById(String id) {
-        return employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee with id : " + id,id));
+        return employeeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee with id : " + id, id));
 
     }
 
@@ -80,6 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeRepository.delete(idToDelete);
         jmsTemplate.convertAndSend("employee", "Employee   " + idToDelete.getLastName() + " " + idToDelete.getFirstName() + " has been deleted.");
     }
+
     @Override
     public void update(String id, EmployeeDTO employeeDTO) throws ParseException {
         Employee updated = getById(id);
@@ -106,30 +113,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> search(String lastName) {
-        String regex= "^[a-zA-Z]+$";
-        if (!lastName.matches(regex) ){
-            throw new InvalidInputException(lastName);
-        }
-        return employeeRepository.findAllByLastName(lastName);
 
+      final List<Employee> allByLastName = employeeRepository.findAllByLastNameContaining(validWord(lastName));
+        if (allByLastName.isEmpty()) {
+            throw new EmptyListException("No employees found with this name!");
+        } else {
+            return allByLastName;
+        }
     }
 
     @Override
     public List<Employee> searchByCity(String city) {
-        String regex= "^[a-zA-Z]+$";
-        if (!city.matches(regex) ){
-            throw new InvalidInputException(city);
+        final List<Employee> allByAddressCity = employeeRepository.findAllByAddressCityContaining(validWord(city));
+        if (allByAddressCity.isEmpty()) {
+            throw new EmptyListException("There are no employees from " + city + ".");
+        } else {
+                return allByAddressCity;
         }
-        return employeeRepository.findAllByAddressCity(city);
     }
 
     @Override
     public List<Employee> findAllByLastNameAndAddressCity(String lastName, String city) {
-        String regex= "^[a-zA-Z]+$";
-        if (!city.matches(regex) || !lastName.matches(regex)){
-            throw new InvalidInputException("value ");
+        final List<Employee> allByLastNameAndAddressCity = employeeRepository.findAllByLastNameContainingAndAddressCityContaining(validWord(lastName), validWord(city));
+        if (allByLastNameAndAddressCity.isEmpty()) {
+            throw new EmptyListException("There are no employyes with this name from " + city + ".");
+        } else {
+            return allByLastNameAndAddressCity;
         }
-        return employeeRepository.findAllByLastNameAndAddressCity(lastName, city);
     }
 
     @Override
@@ -141,20 +151,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<String> sortedList() {
 
         final List<Employee> all = employeeRepository.findAll();
-        return all.stream()
+        final List<String> sortedList = all.stream()
                 .map(e -> e.getLastName() + " " + e.getFirstName()).sorted().collect(Collectors.toList());
+        if (sortedList.isEmpty()){
+            throw new EmptyListException("There are no employees yet to be sorted");
+        }
+        return sortedList;
     }
 
     @Override
     public List<Employee> listByGenderAndCity(String gender, String city) {
-        final List<Employee> allByGender = employeeRepository.findAllByGender(gender);
-        String regex= "^[a-zA-Z]+$";
-        if (!city.matches(regex) || !gender.matches(regex)){
-            throw new InvalidInputException("value ");
-        }
-       return allByGender.stream().filter(e -> e.getAddress().getCity().equalsIgnoreCase(city))
-                .collect(Collectors.toList());
+        final List<Employee> allByGenderAndCity = employeeRepository.findAllByGenderContainingAndAddressCityContaining(validWord(gender), validWord(city));
 
+        if (allByGenderAndCity.isEmpty()) {
+            throw new EmptyListException("There are no "+ gender+ " employees from " + city + ".");
+        } else {
+            return allByGenderAndCity;
+        }
     }
 
     @Override
@@ -171,7 +184,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return all.stream()
                 .filter(e -> e.getName().equalsIgnoreCase("cleaning"))
                 .flatMap((dep -> dep.getEmployee().stream()))
-                .map(e->e.getLastName() + " " + e.getLastName())
+                .map(e -> e.getLastName() + " " + e.getLastName())
                 .sorted()
                 .collect(Collectors.toList());
 
@@ -179,15 +192,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<String> employeesByCity(String city) {
-        final List<Employee> all = employeeRepository.findAllByAddressCity(city);
-        String regex= "^[a-zA-Z]+$";
-        if (!city.matches(regex)){
-            throw new InvalidInputException(city);
-        }
-        return all.stream()
-                .map(e->e.getLastName() + " " + e.getLastName())
+        final List<Employee> all = employeeRepository.findAllByAddressCityContaining(validWord(city));
+        final List<String> allByCity = all.stream()
+                .map(e -> e.getLastName() + " " + e.getLastName())
                 .sorted()
                 .collect(Collectors.toList());
+        if (allByCity.isEmpty()) {
+            throw new EmptyListException("There are no employees from " + city + ".");
+        } else {
+            return allByCity;
+        }
     }
 
 
@@ -220,28 +234,34 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
-
-    @Override
-    public List<Employee> schedule(String monday, String tuesday,String wednesday,String thursday,String friday,String saturday,String sunday) {
-        final List<Employee> schedule = employeeRepository.findAllByScheduleMondayOrScheduleTuesdayOrScheduleWednesdayOrScheduleThursdayOrScheduleFridayOrScheduleSaturdayOrScheduleSunday(monday, tuesday, wednesday, thursday, friday, saturday, sunday);
-          return   schedule.stream().filter(e->e.getDepartment().getName().equalsIgnoreCase("cleaning")).collect(Collectors.toList());
-    }
-
     @Override
     public List<String> search(String name, String city, String start, String end) throws ParseException {
-        String regex= "^[a-zA-Z]+$";
-        if (!city.matches(regex)){
-            throw new InvalidInputException(city);
-        }
 
-        final List<Employee> employeeList = employeeRepository.searchByDepartmentNameAndAddressCity(name, city);
+        final List<Employee> employeeList = employeeRepository.searchByDepartmentNameContainingAndAddressCityContaining(validWord(name), validWord(city));
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setLenient(false);
         Date startDate = sdf.parse(start);
         Date endDate = sdf.parse(end);
-        return employeeList.stream().filter(e -> e.getDateOfBirth().after(startDate) && e.getDateOfBirth().before(endDate))
+        final List<String> collect = employeeList.stream().filter(e -> e.getDateOfBirth().after(startDate) && e.getDateOfBirth().before(endDate))
                 .map(e -> e.getLastName() + " " + e.getFirstName() + ": hired on " + e.getDateOfHiring() + " with id: " + e.getId())
                 .sorted()
                 .collect(Collectors.toList());
+        if (collect.isEmpty()) {
+            throw new EmptyListException("There are no employees from " + city + " born between " + startDate +" and " + endDate);
+        } else {
+            return collect;
+        }
+    }
+
+
+    private static String validWord(String input) {
+        final String[] listOfWords = input.split(" ");
+        String regexp = "^[a-zA-Z_ -]+$";
+        for (String word : listOfWords) {
+            if (!word.matches(regexp)) {
+                throw new EmptyListException("Search words must contain only letters.");
+            }
+        }
+        return input;
     }
 }
